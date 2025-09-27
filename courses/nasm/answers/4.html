@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NASM Lesson Answer 4</title>
+  <link rel="stylesheet" href="../../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>NASM Question Answer 4</h1>
+    <nav>
+      <a href="../nasm32L.html"><b>Back to Lesson</b></a>
+      <a href="../../../index.html"><b>Home</b></a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Practice Question Answer</h2>
+    <p><strong>Question:</strong> Write a "What's your name?" NASM program.</p>
+
+    <h3>Solution:</h3>
+    <pre><code class="nasm-code">section .bss
+    name resb 64 ; 64 characters space for the name
+    name_len resd 1 ; 4 bytes for storing lenght
+
+section .data
+    what_name: db "What's your name: "
+    what_name_len: equ $-what_name
+    hello: db "Hello, "
+    hello_len: equ $-hello
+    mark: db "!", 10
+
+section .text
+    global _start
+
+_start:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, what_name
+    mov edx, what_name_len
+    int 80h
+
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, name
+    mov edx, 64
+    int 80h
+    mov [name_len], eax
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, hello
+    mov edx, hello_len
+    int 80h
+
+    ; "deleting" newline character from input, you can't just do "sub [name_len], 1"
+    mov eax, [name_len]
+    sub eax, 1
+    mov [name_len], eax
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, name
+    mov edx, [name_len]
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, mark
+    mov edx, 2
+    int 80h
+
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+    </code></pre>
+  </main>
+</body>
+</html>
+
+<script>
+const keywords = {
+  sec: /\b(section|global|db|dw|dd|dq|_start|equ)\b/g,
+  call: /\b(mov|int|sub|add|mul|div|and|not|xor|or)\b/g,
+  reg: /\b(eax|ebx|ecx|edx|80h)\b/g
+};
+
+document.querySelectorAll('code.nasm-code').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.sec, '<span class="sec">$1</span>');
+  html = html.replace(keywords.call, '<span class="call">$1</span>');
+  html = html.replace(keywords.reg, '<span class="reg">$1</span>');
+  block.innerHTML = html;
+});
+</script>

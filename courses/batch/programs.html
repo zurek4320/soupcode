@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Batch Script Example Programs</title>
+  <link rel="stylesheet" href="../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>Batch Script Example Programs</h1>
+    <nav>
+      <a href="Wbatch.html"><b>Back to Lesson</b></a>
+      <a href="../../../index.html"><b>Home</b></a>
+    </nav>
+  </header>
+
+  <main>
+    <light_orange><h2>Hello, World!</h2></light_orange>
+    <pre><code class="batch-script">@echo off
+echo Hello, World!
+pause
+</pre></code>  
+  </main>
+</body>
+</html>
+
+<script>
+const keywords = {
+  func: /(@echo|echo|pause)\b/g,
+  arg: /\b(off)\b/g
+};
+
+document.querySelectorAll('code.batch-script').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.func, '<span class="func">$1</span>');
+  html = html.replace(keywords.arg, '<span class="arg">$1</span>');
+  block.innerHTML = html;
+});
+</script>

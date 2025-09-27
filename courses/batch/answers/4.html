@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Batch Lesson Answer 4</title>
+  <link rel="stylesheet" href="../../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>Batch Question Answer 4</h1>
+    <nav>
+      <a href="../Wbatch.html"><b>Back to Lesson</b></a>
+      <a href="../../../index.html"><b>Home</b></a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Practice Question Answer</h2>
+    <p><strong>Question:</strong> Make a batch file that skips some parts of code.</p>
+
+    <h3>Example Solution:</h3>
+    <pre><code class="batch-script">@echo off
+goto :end
+echo This will be skipped
+:end
+pause</code></pre>
+  </main>
+</body>
+</html>
+
+<script>
+const keywords = {
+  func: /(@echo|echo|pause|set|goto|call|cls)\b/g,
+  arg: /(off|if|else)\b/g,
+  special: /(\+|\-|\*|%|\/a|\/p|equ|neq|lss|leq|gtr|geq)\b/g,
+  var: /%[^%]+%/g
+};
+
+document.querySelectorAll('code.batch-script').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.func, '<span class="func">$1</span>');
+  html = html.replace(keywords.arg, '<span class="arg">$1</span>');
+  html = html.replace(keywords.special, '<span class="special">$1</span>');
+  html = html.replace(keywords.var, '<span class="var">$&</span>');
+  block.innerHTML = html;
+});
+</script>

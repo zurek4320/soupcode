@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Learn Fortran 90</title>
+  <link rel="stylesheet" href="../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>Learn Fortran 90</h1>
+    <nav>
+      <a href="../../index.html"><strong>Home</strong></a>
+      <a href="programs.html"><strong>Example Programs</strong></a>
+    </nav>
+  </header>
+
+  <div class="top-panel" id="topPanel">
+    <a href="#part1">What is Fortran & Hello World</a>
+  </div>
+
+  <main>
+    <part1 id="part1">
+      <light_orange><h2>What is Fortran & Hello, World!</h2></light_orange>
+      <p>Fortran is a third-generation, compiled, imperative programming language that is 
+          especially suited to numeric computation and scientific computing. Fortran was originally developed by IBM with a reference manual 
+          being released in 1956 however, the first compilers only began to produce accurate code two years later. Fortran computer programs 
+          have been written to support scientific and engineering applications, such as numerical weather prediction, finite element analysis, 
+          computational fluid dynamics, plasma physics, geophysics, computational physics, crystallography and computational chemistry. 
+          It is a popular language for high-performance computing and is used for programs that benchmark and rank the world's fastest supercomputers.</p>
+
+      <h3>Hello, World!</h3>
+      <p>First of all to make a working program you need to write <code_block>program program_name</code_block> at the very beginning of the code and
+      <code_block>end program program_name</code_block> at the end of it. Printing is very simple, you can do it in diffrent ways but we will stick with the most
+      common one for now. To print write <code_blokc>print</code_blokc> followed by printing way specificator, a comma and text to print inside of 
+      <code_block>"..."</code_block>. To make sure everything is working add <code_block>implicit</code_block> at the beginning of the program, it will be
+      useful later but it's a good habit to always add it. So with all that in mind here is the hello world program:</p>
+      <pre><code class="fortran-code">program hello
+  implicit none
+  print *, "hello world!"
+end program hello</code></pre>
+</part1>
+  </main>
+  <script>
+    const topPanel = document.getElementById('topPanel');
+    let lastScroll = 0;
+
+    const mediaQuery = window.matchMedia("(max-width: 1000px)");
+
+    function handleScroll() {
+      if (mediaQuery.matches) return; // disable script on <= 1000px
+
+      const currentScroll = window.scrollY;
+      if (currentScroll > lastScroll) {
+        topPanel.classList.add('hidden'); // scrolling down → hide
+      } else {
+        topPanel.classList.remove('hidden'); // scrolling up → show
+      }
+      lastScroll = currentScroll;
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    // optional: re-run when screen resizes, to reset the bar
+    mediaQuery.addEventListener("change", (e) => {
+      if (e.matches) {
+        topPanel.classList.remove('hidden'); // reset when disabled
+      }
+    });
+  </script>
+
+
+</body>
+</html>
+
+<script>
+const keywords = {
+  func: /\b(program|end|print|read)\b/g,
+  arg: /\b(if|else)\b/g,
+  special: /\b(implicit|none|character|integer|real|trim)\b/g
+};
+
+document.querySelectorAll('code.fortran-code').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.func, '<span class="func">$1</span>');
+  html = html.replace(keywords.arg, '<span class="arg">$1</span>');
+  html = html.replace(keywords.special, '<span class="special">$1</span>');
+  block.innerHTML = html;
+});
+</script>

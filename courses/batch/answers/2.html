@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Batch Lesson Answer 2</title>
+  <link rel="stylesheet" href="../../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>Batch Question Answer 2</h1>
+    <nav>
+      <a href="../Wbatch.html"><b>Back to Lesson</b></a>
+      <a href="../../../index.html"><b>Home</b></a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Practice Question Answer</h2>
+    <p><strong>Question:</strong> Make a batch script that subtracts two of your favorite numbers and writes output as 
+      <code_block>x-y=z</code_block>.</p>
+
+    <h3>Example Solution:</h3>
+    <pre><code class="batch-script">@echo off
+set /a num1=48
+set /a num2=8
+set /a num3=num1-num2
+echo %num1%-%num2%=%num3%
+pause</code></pre>
+  </main>
+</body>
+</html>
+
+<script>
+const keywords = {
+  func: /(@echo|echo|pause|set)\b/g,
+  arg: /(off|if|else)\b/g,
+  special: /(\+|\-|\*|%|\/a|\/p)\b/g,
+  var: /%[^%]+%/g
+};
+
+document.querySelectorAll('code.batch-script').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.func, '<span class="func">$1</span>');
+  html = html.replace(keywords.arg, '<span class="arg">$1</span>');
+  html = html.replace(keywords.special, '<span class="special">$1</span>');
+  html = html.replace(keywords.var, '<span class="var">$&</span>');
+  block.innerHTML = html;
+});
+</script>

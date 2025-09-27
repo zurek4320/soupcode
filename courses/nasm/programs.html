@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NASM Example Programs</title>
+  <link rel="stylesheet" href="../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>NASM Example Programs</h1>
+    <nav>
+      <a href="nasm32L.html"><b>Back to Lesson</b></a>
+      <a href="../../../index.html"><b>Home</b></a>
+    </nav>
+  </header>
+
+  <main>
+    <light_orange><h2>Simpliest NASM Program</h2></light_orange>
+    <pre><code class="nasm-code">global _start
+
+_start:
+    mov eax, 1
+    mov ebx, 0
+    int 80h</code></pre>
+    <light_orange><h2>Hello, World!</h2></light_orange>
+    <pre><code class="nasm-code">section .data
+    hello: db "Hello, World!", 10 ; 10 is ascii code for new line
+    hello_len: equ $-hello
+
+section .text
+    global _start
+
+_start:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, hello
+    mov edx, hello_len
+    int 80h
+	
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+</code></pre>
+    <light_orange><h2>What's Your Name Program</h2></light_orange>
+    <code class="nasm-code"><pre>section .bss
+    name resb 64 ; 64 characters space for the name
+    name_len resd 1 ; 4 bytes for storing lenght
+
+section .data
+    what_name: db "What's your name: "
+    what_name_len: equ $-what_name
+    hello: db "Hello, "
+    hello_len: equ $-hello
+    mark: db "!", 10
+
+section .text
+    global _start
+
+_start:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, what_name
+    mov edx, what_name_len
+    int 80h
+
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, name
+    mov edx, 64
+    int 80h
+    mov [name_len], eax
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, hello
+    mov edx, hello_len
+    int 80h
+
+    ; "deleting" newline character from input, you can't just do "sub [name_len], 1"
+    mov eax, [name_len]
+    sub eax, 1
+    mov [name_len], eax
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, name
+    mov edx, [name_len]
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, mark
+    mov edx, 2
+    int 80h
+
+    mov eax, 1
+    xor ebx, ebx
+    int 80h</pre></code>
+    <light_orange><h2>Calculator</h2></light_orange>
+    <code class="nasm-code"><pre>section .bss
+    num1 resb 1024
+    num2 resb 1024
+    op   resb 1
+    result resb 1024
+
+section .data
+    msg1 db "Write first number: ",0
+    msg1_len equ $-msg1
+    msg2 db "Write second number: ",0
+    msg2_len equ $-msg2
+    msg_op db "Enter operator (+,-,*,/): ",0
+    msg_op_len equ $-msg_op
+    msg_res db "Result: ",0
+    msg_res_len equ $-msg_res
+
+section .text
+    global _start
+
+_start:
+    ; --- Input first number ---
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg1
+    mov edx, msg1_len
+    int 80h
+
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num1
+    mov edx, 1024
+    int 80h
+
+    ; --- Input second number ---
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg2
+    mov edx, msg2_len
+    int 80h
+
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, num2
+    mov edx, 1024
+    int 80h
+
+    ; --- Input operator ---
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_op
+    mov edx, msg_op_len
+    int 80h
+
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, op
+    mov edx, 1
+    int 80h
+
+    ; --- Convert ASCII to integer ---
+    mov esi, num1
+    call atoi
+    mov ebx, eax       ; store first number in ebx
+
+    mov esi, num2
+    call atoi
+    mov ecx, eax       ; store second number in ecx
+
+    ; --- Perform operation ---
+    mov al, [op]
+    cmp al, '+'
+    je do_add
+    cmp al, '-'
+    je do_sub
+    cmp al, '*'
+    je do_mul
+    cmp al, '/'
+    je do_div
+
+    jmp exit           ; unknown operator
+
+do_add:
+    add ebx, ecx
+    jmp print_result
+do_sub:
+    sub ebx, ecx
+    jmp print_result
+do_mul:
+    imul ebx, ecx
+    jmp print_result
+do_div:
+    mov eax, ebx
+    cdq
+    idiv ecx
+    mov ebx, eax
+    jmp print_result
+
+; --- Convert integer to ASCII ---
+print_result:
+    mov eax, ebx
+    mov edi, result
+    call itoa
+
+    ; --- Print result ---
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg_res
+    mov edx, msg_res_len
+    int 80h
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, result
+    mov edx, 1024
+    int 80h
+
+exit:
+    mov eax, 1
+    mov ebx, 0
+    int 80h
+
+; ------------------------------
+; atoi: converts ASCII number at [esi] to integer in eax
+; ------------------------------
+atoi:
+    xor eax, eax
+atoi_loop:
+    mov bl, [esi]
+    cmp bl, 10        ; newline?
+    je atoi_done
+    cmp bl, 0
+    je atoi_done
+    sub bl, '0'
+    imul eax, eax, 10
+    add eax, ebx
+    inc esi
+    jmp atoi_loop
+atoi_done:
+    ret
+
+; ------------------------------
+; itoa: converts integer in eax to ASCII at [edi]
+; ------------------------------
+itoa:
+    mov ecx, 10
+    xor edx, edx
+    mov esi, edi
+    add esi, 1023     ; start from end
+    mov ebx, esi
+    cmp eax, 0
+    jne itoa_loop
+    mov byte [esi], '0'
+    dec esi
+    jmp itoa_done
+itoa_loop:
+    xor edx, edx
+    div ecx
+    add dl, '0'
+    mov [esi], dl
+    dec esi
+    test eax, eax
+    jnz itoa_loop
+itoa_done:
+    inc esi
+    mov edi, esi
+    ret
+</pre></code>  
+  </main>
+</body>
+</html>
+
+<script>
+const keywords = {
+  sec: /\b(section|global|db|dw|dd|dq|_start|equ)\b/g,
+  call: /\b(mov|int|sub|add|mul|div|and|not|xor|or|jmp|cmp|je|jg|jne|jl|jge|jle|inc|dec|call|ret)\b/g,
+  reg: /\b(eax|ebx|ecx|edx|80h)\b/g
+};
+
+document.querySelectorAll('code.nasm-code').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.sec, '<span class="sec">$1</span>');
+  html = html.replace(keywords.call, '<span class="call">$1</span>');
+  html = html.replace(keywords.reg, '<span class="reg">$1</span>');
+  block.innerHTML = html;
+});
+</script>

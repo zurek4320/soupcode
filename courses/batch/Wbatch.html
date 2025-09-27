@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Learn Batch</title>
+  <link rel="stylesheet" href="../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>Learn Batch</h1>
+    <nav>
+      <a href="../../index.html"><strong>Home</strong></a>
+      <a href="programs.html"><strong>Example Programs</strong></a>
+    </nav>
+  </header>
+
+  <div class="top-panel" id="topPanel">
+    <a href="#part1">What is Batch & Hello, World!</a>
+    <a href="#part2">Variables & Basic Arithmetic</a>
+    <a href="#part3">If Stagments & Input</a>
+    <a href="#part4">Labels</a>
+    <a href="#part5">Cool Tricks</a>
+  </div>
+
+  <main>
+    <part1 id="part1">
+        <light_orange><h2>What is Batch & Hello, World!</h2></light_orange>
+        <p>A batch file is a script file in DOS, OS/2 and Microsoft Windows. 
+            It consists of a series of commands to be executed by the command-line interpreter, 
+            stored in a plain text file. A batch file may contain any command the interpreter 
+            accepts interactively and use constructs that enable conditional branching and 
+            looping within the batch file, such as <code_block>IF</code_block>, 
+            <code_block>FOR</code_block>, and <code_block>GOTO</code_block> labels. The term "batch" 
+            is from batch processing, meaning "non-interactive execution", though a batch file 
+            might not process a batch of multiple data. It can be used for writing promts in Windowses CMD.</p>
+        <h3>Batch Hello, World!</h3>
+        <p>Making a "Hello World" program in batch couldn't be easier, to print just write <code_block>echo Text you want to print</code_block>.
+        So hello world would look like this:</p>
+        <pre><code class="batch-script">echo Hello, World!</code></pre>
+        <p>Well, if this script would be ran by itself, not inside of CMD it would end immediately making it imposible to read message. 
+            To prevent that we can use <code_block>pause</code_block> function. <code_block>pause</code_block> stops the program until 
+        any key is pressed. But then still output would be more something like this: </p>
+        <pre><code class="batch-script">C:\Users\zurek>echo Hello, World!
+Hello, World!
+
+C:\Users\zurek>pause
+Press any key to continue . . .</code></pre>
+        <p>To stop the program from writing output like it's a CMD we can turn <code_block>@echo off</code_block>. 
+            With all of that here is a complete <code_block>Hello, World!</code_block> program:</p>
+        <pre><code class="batch-script">@echo off
+echo Hello, World!
+pause</code></pre>
+
+      <h3>Practice Question:</h3>
+      <p>Write a batch program that prints your name.</p>
+
+      <div class="answer-btn">
+        <a href="answers/1.html">Check the answer</a>
+      </div>
+    </part1>
+
+    <part2 id="part2">
+        <light_orange><h2>Variables & Basic Arithmetic</h2></light_orange>
+        <p>In batch defining a string variable is really easy, write <code_block>set</code_block> 
+            followed by </code_block>variable_name=</code_block> and variable <code_block>content</code_block> without any double quotes. 
+            For example:</p>
+        <pre><code class="batch-script">set name=bob</code></pre>
+        <p>We can later print that variable by putting its name into %%, for example:</p>
+        <pre><code class="batch-script">@echo off
+set name=Bob
+echo My name is %name%.
+pause</code></pre>
+        <h3>Arithmetic</h3>
+        <p>Making an int variable in batch is nearly the same as making a string one but before the <code_block>variable_name</code_block>
+         we add /a like this:</p>
+        <pre><code class="batch-script">set /a num=420</code></pre>
+        <p>Adding, subtracting etc. is really easy, just make variable exual to <code_block>X(+|-|*|/|)Y</code_block> for example:</p>
+        <pre><code class="batch-script">@echo off
+set /a num=7
+set /a num2=num+5
+echo %num% + 5 = %num2%
+pause</code></pre>
+      <h3>Practice Question:</h3>
+      <p>Make a batch script that subtracts two of your favorite numbers and writes output as <code_block>x-y=z</code_block>.</p>
+
+      <div class="answer-btn">
+        <a href="answers/2.html">Check the answer</a>
+      </div>
+</part2>
+
+    <part3 id="part3">
+      <light_orange><h2>If Stagments & Input</h2></light_orange>
+      <p>In batch getting input is really easy, just add <code_block>/p</code_block> after <code_block>set</code_block> 
+      while declaring a variable, for example: <code_block>set /p name=</code_block>. If you want to write something at the same line before input
+    will be given you can write it after <code_block>=</code_block>, for example here is "What's your name?" program:</p>
+    <pre><code class="batch-script">@echo off
+set /p name=What's your name? 
+echo Hello, %name%!
+pause</code></pre>
+
+      <h3>If Stagments</h3>
+      <p>If stagments are a bit diffrent that what you might expect, variables need to be inside of <code_block>%...%</code_block> 
+        and if its string in <code_block>"..."</code_block> too (as well as the text you are compering it to). After if stagments there need to be <code_block>(...)</code_block>
+      for example:</p>
+      <pre><code class="batch-script">@echo off
+echo Question: 2+2=?
+set /p answer=
+if %answer%==4 (
+  echo You are right!
+)
+pause</code></pre>
+    <h3>Elif and Else</h3>
+    <p>Batch doesn't really have <code_block>elif</code_block>, you need to use <code_block>else if</code_block>. <code_block>else</code_block>
+    and <code_block>else if</code_block> need to be putted right after closing of an if stagment for example:</p>
+    <pre><code class="batch-script">@echo off
+echo Question: 2+2=?
+set /p answer=
+if %answer%==4 (
+  echo You are right!
+) else if %answer%==22 (
+  echo Nope???
+) else (
+  echo You are wrong D:
+)
+pause</code></pre>
+
+      <h3>Practice Question:</h3>
+      <p>Write a batch script that gives user secret messages on correct password.</p>
+
+      <div class="answer-btn">
+        <a href="answers/3.html">Check the answer</a>
+      </div>
+    </part3>
+
+    <part4 id="part4">
+      <light_orange><h2>Labels</h2></light_orange>
+      <p>What is a label? Label is a location indicator that code can later move to. 
+        To define a label write <code_block>:label_name</code_block> and to go that label write <code_block>goto :label</code_block>.
+      Here is an example of label usage:</p>
+      <pre><code class="batch-script">@echo off
+goto :end
+echo hello there
+:end
+pause</code></pre>
+      <p>Code above won't print <code_block>hello there!</code_block> because it skips <code_block>echo hello there!</code_block> 
+        by jumping to a label called <code_block>end</code_block>.</p>
+      <h3>Ala Functions</h3>
+      <p>In batch you can call a function by using <code_block>call</code_block> keyword. 
+        It will run the code inside of that function and then comeback to code from before. Function need to end with <code_block>goto :eof</code_block>
+      which you shouldn't define or it won't work. Here is an example:
+    <pre><code class="batch-script">@echo off
+call :hello
+goto :end
+:hello
+  echo hello there!
+  goto :eof
+:random_label
+  echo This won't print!
+:end
+  pause</code></pre></p>
+
+      <h3>Practice Question:</h3>
+      <p>Make a batch file that skips some parts of code.</p>
+
+      <div class="answer-btn">
+        <a href="answers/4.html">Check the answer</a>
+      </div>
+    </part4>
+
+    <part5 id="part5">
+      <light_orange><h2>Cool Tricks</h2></light_orange>
+      <p>Here are some cool tricks you can use in your batch creations.</p>
+      <h3>CLS</h3>
+      <p><code_block>cls</code_block> clears whole screen. Yea, that's all</p>
+      <h3>Case Insensitive If Stagments</h3>
+      <p>To make if stagment case insensitive add <code_block>/i</code_block> right after <code_block>if</code_block>.</p>
+      <h3>!=, >=, <=, >, <</h3>
+      <p>Well, batch doesn't support operators like <code_bloc><=</code_bloc> or <code_bloc>!=</code_bloc>
+      but support numeric comparisons. Here is the table of them:</p>
+      <ul>
+        <li><strong><code_block>equ</code_block></strong> — Equal&nbsp;Example: <code_block>if %x% equ %y%</code_block></li>
+        <li><strong><code_block>neq</code_block></strong> — Not equal&nbsp;Example: <code_block>if %x% neq %y%</code_block></li>
+        <li><strong><code_block>lss</code_block></strong> — Less than&nbsp;Example: <code_block>if %x% lss %y%</code_block></li>
+        <li><strong><code_block>leq</code_block></strong> — Less or equal&nbsp;Example: <code_block>if %x% leq %y%</code_block></li>
+        <li><strong><code_block>gtr</code_block></strong> — Greater than&nbsp;Example: <code_block>if %x% gtr %y%</code_block></li>
+        <li><strong><code_block>geq</code_block></strong> — Greater or equal&nbsp;Example: <code_block>if %x% geq %y%</code_block></li>
+      </ul>
+      <h3>Code example:</h3>
+      <p>With all that knowlegde in mind, here is a little quiz game example:</p>
+      <pre><code class="batch-script">:: This quiz is very short but if you want you can easly extend it
+
+@echo off
+echo Welcome to clever quiz!
+pause
+cls
+
+echo Question 1.
+echo What's 2+2?
+echo a: 5  b: 22
+echo c: 4  d: 2
+
+set /p answer=Answer (a/b/c/d): 
+if /i "%answer%" neq "c" (goto :lose)
+
+echo Correct!
+pause
+cls
+
+echo Question 2.
+echo What's the most clever code learning website?
+echo a: SoupCode  b: Youtube
+echo c: Google    d: HowToPayTaxes
+
+set /p answer=Answer (a/b/c/d): 
+if /i "%answer%" neq "a" (goto :lose)
+
+echo Correct!
+pause
+cls
+
+goto :win
+:lose
+  echo You have lost!
+  goto :end
+:win
+  echo You won! (yes this quiz had only 2 questions)
+:end
+  pause</code></pre>
+    </part5>
+  </main>
+  <script>
+    const topPanel = document.getElementById('topPanel');
+    let lastScroll = 0;
+
+    const mediaQuery = window.matchMedia("(max-width: 1000px)");
+
+    function handleScroll() {
+      if (mediaQuery.matches) return; // disable script on <= 1000px
+
+      const currentScroll = window.scrollY;
+      if (currentScroll > lastScroll) {
+        topPanel.classList.add('hidden'); // scrolling down → hide
+      } else {
+        topPanel.classList.remove('hidden'); // scrolling up → show
+      }
+      lastScroll = currentScroll;
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    // optional: re-run when screen resizes, to reset the bar
+    mediaQuery.addEventListener("change", (e) => {
+      if (e.matches) {
+        topPanel.classList.remove('hidden'); // reset when disabled
+      }
+    });
+  </script>
+</body>
+</html>
+
+<script>
+const keywords = {
+  func: /(@echo|echo|pause|set|goto|call|cls)\b/g,
+  arg: /(off|if|else)\b/g,
+  special: /(\+|\-|\*|%|\/a|\/p|equ|neq|lss|leq|gtr|geq)\b/g,
+  var: /%[^%]+%/g
+};
+
+document.querySelectorAll('code.batch-script').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.func, '<span class="func">$1</span>');
+  html = html.replace(keywords.arg, '<span class="arg">$1</span>');
+  html = html.replace(keywords.special, '<span class="special">$1</span>');
+  html = html.replace(keywords.var, '<span class="var">$&</span>');
+  block.innerHTML = html;
+});
+</script>

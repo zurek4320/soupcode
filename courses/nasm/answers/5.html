@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NASM Lesson Answer 5</title>
+  <link rel="stylesheet" href="../../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>NASM Question Answer 5</h1>
+    <nav>
+      <a href="../nasm32L.html"><b>Back to Lesson</b></a>
+      <a href="../../../index.html"><b>Home</b></a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Practice Question Answer</h2>
+    <p><strong>Question:</strong> Write a NASM program that counts down from 10 to 1 and then exits.</p>
+
+    <h3>Solution:</h3>
+    <pre><code class="nasm-code">section .text
+  global _start
+
+_start:
+  mov ecx, 5        ; loop counter
+  loop_start:
+    ; do something here
+    dec ecx
+    cmp ecx, 0
+    jne loop_start    ; repeat until ecx == 0
+
+    ; exit program
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+    </code></pre>
+  </main>
+</body>
+</html>
+
+<script>
+const keywords = {
+  sec: /\b(section|global|db|dw|dd|dq|_start|equ)\b/g,
+  call: /\b(mov|int|sub|add|mul|div|and|not|xor|or|jmp|cmp|je|jg|jne|jl|jge|jle|inc|dec)\b/g,
+  reg: /\b(eax|ebx|ecx|edx|80h)\b/g
+};
+
+document.querySelectorAll('code.nasm-code').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.sec, '<span class="sec">$1</span>');
+  html = html.replace(keywords.call, '<span class="call">$1</span>');
+  html = html.replace(keywords.reg, '<span class="reg">$1</span>');
+  block.innerHTML = html;
+});
+</script>

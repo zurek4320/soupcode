@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Learn Brainf#ck</title>
+  <link rel="stylesheet" href="../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>Learn Brainf#ck</h1>
+    <nav>
+      <a href="../../index.html"><strong>Home</strong></a>
+      <a href="programs.html"><strong>Example Programs</strong></a>
+    </nav>
+  </header>
+
+  <div class="top-panel" id="topPanel">
+    <a href="#part1">What is Brainf#ck?</a>
+    <a href="#part2">Basics of Brainf#ck</a>
+    <a href="#part3">Input</a>
+    <a href="#part4">Cool Tricks & Patterns</a>
+  </div>
+
+  <main>
+    <part1 id="part1">
+    <light_orange><h2>What is Brainf#ck?</h2></light_orange>
+    <p>
+      Brainfuck is an esoteric programming language created in 1993 by Swiss student Urban Müller.
+       Designed to be extremely minimalistic, the language consists of only eight simple commands, <>,.[]+-
+    </p>
+    
+    <h3>Example of "Hello, World!" program:</h3>
+    <pre><code>>+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.[-]
+>++++++++[<++++>-] <.>+++++++++++[<++++++++>-]<-.--------.+++
+.------.--------.[-]>++++++++[<++++>- ]<+.[-]++++++++++.
+</code></pre></part1>
+    <part2 id="part2">
+    <light_orange><h2>Basics of Brainf#ck</h2></light_orange>
+    <p>
+    In Brainfuck, you work with <b>30,000 memory cells</b>. Each cell stores 1 byte (initially set to 0).  
+    The language uses <b>8 simple operators</b>:
+    </p>
+    <ul>
+    <li><code_block>&gt;</code_block> move to the next cell (right)</li>
+    <li><code_block>&lt;</code_block> move to the previous cell (left)</li>
+    <li><code_block>+</code_block> increase the value in the current cell</li>
+    <li><code_block>-</code_block> decrease the value in the current cell</li>
+    <li><code_block>.</code_block> output the ASCII character of the current cell’s value</li>
+    <li><code_block>,</code_block> input a single character into the current cell</li>
+    <li><code_block>[</code_block> start a loop (runs while the current cell is not zero)</li>
+    <li><code_block>]</code_block> end a loop</li>
+    </ul>
+
+    <h3>Printing Characters</h3>
+    <p>
+    To print something, use the <code_block>.</code_block> operator.  
+    For example, to print the letter <code_block>A</code_block> (ASCII code 65), you can increase the first cell to 65 using 
+    <code_block>+</code_block> and then print it:
+    </p>
+    <pre><code>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+    </code></pre>
+
+    <h3>Moving Between Cells</h3>
+    <p>
+    To move between cells, use <code_block>&gt;</code_block> (right) and <code_block>&lt;</code_block> (left).  
+    For example:
+    </p>
+    <pre><code>+++&gt;++ 
+    </code></pre>
+    <p>
+    Here, the first cell ends up with value 3, and the second cell has value 2.
+    </p>
+
+    <h3>Loops</h3>
+    <p>
+    Writing 65 plus signs just to print <code_block>A</code_block> isn't very efficient.  
+    Instead, you can use loops with <code_block>[</code_block> and <code_block>]</code_block>.  
+    A loop runs as long as the current cell is not zero.
+    </p>
+    <p>
+    For example, this program:
+    </p>
+    <pre><code>&gt;+++++++++++++[&lt;+++++&gt;-]&lt;.
+    </code></pre>
+    <p>
+    Step by step:
+    <ol>
+        <li>Move to the second cell (<code_block>&gt;</code_block>).</li>
+        <li>Set it to 13 (<code_block>+++++++++++++</code_block>).</li>
+        <li>Enter the loop (<code_block>[ ... ]</code_block>):  
+        <ul>
+            <li>Move back to the first cell (<code_block>&lt;</code_block>).</li>
+            <li>Add 5 (<code_block>+++++</code_block>).</li>
+            <li>Move to the second cell again (<code_block>&gt;</code_block>).</li>
+            <li>Subtract 1 (<code_block>-</code_block>).</li>
+        </ul>
+        The loop continues until the second cell is 0.
+        </li>
+        <li>At this point, the first cell contains 65 (the ASCII code for <code_block>A</code_block>).</li>
+        <li>Move back to the first cell and print it (<code_block>&lt;.</code_block>).</li>
+    </ol>
+    </p>
+
+</part2>
+    <part3 id="part3">
+      <light_orange><h2>Input</h2></light_orange>
+
+      <p>
+        Brainfuck's input operator is <code_block>,</code_block>. It reads a single byte (character) from input and stores its ASCII value in the current cell.
+      </p>
+
+      <h3>Simple echo (read and print until a NUL)</h3>
+      <p>
+        This small program reads characters and echoes them back until a zero byte (NUL) is read:
+      </p>
+      <pre><code>,[.,]</code></pre>
+      <p>
+        How it works:
+        <ul>
+          <li><code_block>,</code_block> — read one byte into the current cell.</li>
+          <li><code_block>[ ... ]</code_block> — while that cell is non-zero: <code_block>.</code_block> print it, then <code_block>,</code_block> read the next byte into the same cell.</li>
+          <li>If the user (or input source) provides a NUL (0), the loop stops.</li>
+        </ul>
+      </p>
+
+      <h3>Read, modify, and print</h3>
+      <p>
+        You can read a character, change it, then print it. Example: read a char, increment it by 1 and print the next character:
+      </p>
+      <pre><code>,+.</code></pre>
+      <p>
+        If you input <code_block>A</code_block> (65), the program outputs <code_block>B</code_block> (66).
+      </p>
+
+      <h3>Read into other cells</h3>
+      <p>
+        You may want to store multiple input bytes across cells. Example: read two characters and print them in reverse:
+      </p>
+      <pre><code>,>,&lt;.&gt;.</code></pre>
+      <p>
+        Steps:
+        <ol>
+          <li><code_block>,</code_block> read char1 into cell0.</li>
+          <li><code_block>,</code_block> read char2 into cell1.</li>
+          <li><code_block>&lt;.</code_block> move back to cell0 and print char1 (if you want reverse, print cell1 first: <code_block>&gt;.</code_block>).</li>
+        </ol>
+      </p>
+    </part3>
+    <h3>Practice Question:</h3>
+    <p>Write program that writes your name.</p>
+    <div class="answer-btn">
+      <a href="answers/1.html">Check the answer</a>
+    </div>
+    <part4 id="part4">
+      <light_orange><h2>Cool Tricks & Patterns</h2></light_orange>
+
+      <h3>1. Quickly clear a cell: <code_block>[-]</code_block></h3>
+      <p>
+        The idiom <code_block>[-]</code_block> sets the current cell to zero: it loops while the cell is non-zero and decrements each iteration.
+      </p>
+      <pre><code>+++++[-]   ; makes cell 0 then clears it back to 0</code></pre>
+
+      <h3>2. Move (transfer) a value to the right: <code_block>[->+&lt;]</code_block></h3>
+      <p>
+        If the current cell holds a value and the next cell is zero, you can move the entire value one cell to the right without temporary variables:
+      </p>
+      <pre><code>[->+&lt;]</code></pre>
+      <p>
+        Explanation: while current &gt; 0: decrement current (<code_block>-</code_block>) and increment the right cell (<code_block>+&lt;</code_block>), leaving the source cell 0 and the destination containing the original value.
+      </p>
+
+      <h3>3. Copy a cell while preserving the original</h3>
+      <p>
+        Use a temporary cell to copy cell0 into cell1 while keeping cell0 unchanged:
+      </p>
+      <pre><code>[->+>+&lt;&lt;] &gt;&gt;[-&lt;&lt;+&gt;&gt;]</code></pre>
+      <p>
+        Layout: cell0 = value, cell1 = 0, cell2 = 0. After <code_block>[->+>+&lt;&lt;]</code_block> you get cell0=0, cell1=value, cell2=value. Then <code_block>&gt;&gt;[-&lt;&lt;+&gt;&gt;]</code_block> moves the value in cell2 back into cell0, restoring it. Final state: cell0=value, cell1=value, cell2=0.
+      </p>
+
+      <h3>4. Fast increments (building constants with loops)</h3>
+      <p>
+        You can build large constants quickly with nested loops. Example: create ASCII <code_block>'A'</code_block> (65) and print it:
+      </p>
+      <pre><code>++++++++[>++++++++&lt;-]&gt;+.</code></pre>
+      <p>
+        Explanation:
+        <ul>
+          <li><code_block>++++++++</code_block> sets cell0 = 8.</li>
+          <li><code_block>[&gt;++++++++&lt;-]</code_block> runs 8 times, adding 8 to cell1 each time → cell1 = 64.</li>
+          <li><code_block>&gt;+.</code_block> move to cell1, add 1 → 65, then print (<code_block>.</code_block>).</li>
+        </ul>
+      </p>
+
+      <h3>5. Multiplication / scaling (pattern)</h3>
+      <p>
+        Using nested loops you can scale one cell into another (effectively multiply). The general idea is:
+      </p>
+      <pre><code>  ; pseudopattern: set a counter, use an inner loop to add multiples to a target
+  +++++[ &gt; +++++ &lt; - ]  ; 5 * 5 = 25 into the target cell</code></pre>
+      <p>
+        The exact pattern depends on where your source and targets are. Compose these building blocks to implement multiplication or repeated addition.
+      </p>
+
+      <h3>6. Handy one-liners</h3>
+      <ul>
+        <li><code_block>[-]</code_block> — clear current cell.</li>
+        <li><code_block>[->+&lt;]</code_block> — move value right (destroy source).</li>
+        <li><code_block>[&gt;+&lt;-]</code_block> — move value left (mirror of above, when pointer on source).</li>
+        <li><code_block>[->+>+&lt;&lt;]</code_block> — split value into two cells (destroys source).</li>
+        <li><code_block>,[.,]</code_block> — echo input until NUL.</li>
+      </ul>
+
+      <p style="font-style:italic">
+        Tip: combine these small patterns. For example, use fast-increment loops to build counters, then use <code_block>[->+&lt;]</code_block> to distribute values, and <code_block>[-]</code_block> to clean up temporary cells. Brainfuck programs often become readable by factoring repeated patterns into comments and clear tape layout.
+      </p>
+    </part4>
+  </main>
+  <script>
+    const topPanel = document.getElementById('topPanel');
+    let lastScroll = 0;
+
+    const mediaQuery = window.matchMedia("(max-width: 1000px)");
+
+    function handleScroll() {
+      if (mediaQuery.matches) return; // disable script on <= 1000px
+
+      const currentScroll = window.scrollY;
+      if (currentScroll > lastScroll) {
+        topPanel.classList.add('hidden'); // scrolling down → hide
+      } else {
+        topPanel.classList.remove('hidden'); // scrolling up → show
+      }
+      lastScroll = currentScroll;
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    // optional: re-run when screen resizes, to reset the bar
+    mediaQuery.addEventListener("change", (e) => {
+      if (e.matches) {
+        topPanel.classList.remove('hidden'); // reset when disabled
+      }
+    });
+  </script>
+</body>
+</html>

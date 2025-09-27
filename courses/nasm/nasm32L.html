@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Learn NASM</title>
+  <link rel="stylesheet" href="../../style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <header>
+    <h1>Learn NASM</h1>
+    <nav>
+      <a href="../../index.html"><strong>Home</strong></a>
+      <a href="programs.html"><strong>Example Programs</strong></a>
+    </nav>
+  </header>
+
+  <div class="top-panel" id="topPanel">
+    <a href="#part1">What is NASM?</a>
+    <a href="#part2">How to make a NASM program?</a>
+    <a href="#part3">Hello World!</a>
+    <a href="#part4">Arithmetic</a>
+    <a href="#part5">Input</a>
+    <a href="#part6">Labels & Control Flow</a>
+    <a href="#part7">Important Info</a>
+  </div>
+
+  <main>
+    <part1 id="part1">
+    <light_orange><h2>What is NASM?</h2></light_orange>
+    <p>
+      The Netwide Assembler (NASM) is an assembler and disassembler for the Intel x86 architecture. 
+      It can be used to write 16-bit, 32-bit (IA-32), and 64-bit (x86-64) programs. 
+      It is considered one of the most popular assemblers for Linux and x86 chips. 
+      Here you will be learning the <strong>32-bit Linux version</strong>.
+    </p>
+    
+    <h3>Example of "Hello, World!" program:</h3>
+    <pre><code class="nasm-code">section .data
+    message: db "Hello, World!", 10
+    message_len: equ $-message
+
+section .text
+    global _start
+
+_start:
+    mov eax, 4          ; sys_write
+    mov ebx, 1          ; stdout
+    mov ecx, message    ; pointer to message
+    mov edx, message_len; message length
+    int 80h             ; call kernel
+
+    mov eax, 1          ; sys_exit
+    xor ebx, ebx        ; return code 0
+    int 80h             ; call kernel
+</code></pre></part1>
+    <part2 id="part2">
+    <light_orange><h2>How to make a NASM program?</h2></light_orange>
+    <p>
+      Every 32-bit NASM program for Linux needs an <strong>entry symbol</strong> 
+      and an <strong>exit syscall</strong>. The entry symbol is a label 
+      (a name followed by a colon). For example:
+    </p>
+  
+    <pre><code class="nasm-code">label1:
+    mov eax, 420
+label2:
+    mov ebx, 123
+    add eax, ebx
+</code></pre>
+
+    <p>
+      To specify which label is the entry symbol, we write its name after 
+      <code_block>global</code_block> The entry symbol usually needs to be named 
+      <code_block>_start</code_block> or <code_block>main</code_block> (the latter is used when 
+      importing C functions).
+    </p>
+
+    <p>
+      In NASM, there are different sections for different types of data, 
+      such as <code_block>section .text</code_block> or <code_block>section .data</code_block> .
+      The entry symbol is usually placed in <code_block>.text</code_block>
+      but it does not need to belong to a section at all, even though it's more usual to place it in <code_block>section .text</code_block>.
+    </p>
+
+    <h3>Syscalls in NASM</h3>
+    <p>
+      A <strong>syscall</strong> (system call) is a way to request a service from the operating system, 
+      such as printing text to the screen or exiting a program.  
+      In 32-bit Linux NASM, syscalls are invoked with <code_block>int 80h</code_block>.
+    </p>
+
+    <h4>Registers Used in Syscalls</h4>
+    <ul>
+      <li><code_block>EAX</code_block> - syscall number (decides which function to run).</li>
+      <li><code_block>EBX</code_block> - first argument (e.g., file descriptor like stdout = 1).</li>
+      <li><code_block>ECX</code_block> - second argument (e.g., pointer to a string or buffer).</li>
+      <li><code_block>EDX</code_block> - third argument (e.g., length of the buffer).</li>
+    </ul>
+
+    <p>
+      For example, when printing text with sys_write (syscall number 4):
+    </p>
+    <pre><code class="nasm-code">mov eax, 4      ; syscall number for write
+mov ebx, 1      ; stdout (file descriptor)
+mov ecx, msg    ; address of text
+mov edx, len    ; length of text
+int 80h         ; make syscall
+</code></pre>
+
+    <h4>The mov instruction</h4>
+    <p>
+      The <strong>mov</strong> instruction copies data from one place to another.  
+      Its general form is <code_block>mov destination, source</code_block>.
+    </p>
+    <p>Example: <code class="nasm-code">mov eax, 4</code> places the number <code_block>4</code_block> into the <code_block>EAX</code_block> register.</p>
+
+    <h4>The Exit Syscall</h4>
+    <p>
+      When your program finishes, you must exit cleanly.  
+      In NASM, this is done with the sys_exit syscall (number 1): 
+    </p>
+    <pre><code class="nasm-code">mov eax, 1   ; syscall number for exit
+mov ebx, 0   ; return code (0 = success)
+int 80h      ; call kernel
+</code></pre>
+
+    <p>
+      Here, <code_block>EBX</code_block> holds the program's exit status.  
+      <code_block>0</code_block> usually means success, and non-zero values can indicate errors.
+    </p>
+
+    <h3>Practice Question:</h3>
+    <p>Write working NASM program.</p>
+
+    <div class="answer-btn">
+      <a href="answers/1.html">Check the answer</a>
+    </div></part2>
+    <part3 id="part3">
+    <light_orange><h2>How to make a "Hello, World!" program?</h2></light_orange>
+
+<p>
+  To print text to the console in NASM, we use the 
+  <strong>sys_write</strong> function (system call number <code_block>4</code_block>).  
+  Sys_write needs three things:</p>
+<ul>
+  <li><strong>Where</strong> to write (we'll use <code_block>stdout</code_block>, file descriptor <code_block>1</code_block>).</li>
+  <li><strong>What</strong> to write (a string stored in memory).</li>
+  <li><strong>How long</strong> the string is (its length in bytes).</li>
+</ul>
+
+<h3>Defining variables</h3>
+<p>
+  Variables are defined in the <code_block>section .data</code_block>.  
+  The most common directive is <code_block>db</code_block> ("define byte"), used to store text or single-byte values:
+</p>
+
+<pre><code class="nasm-code">section .data
+    text:      db "Clever text"   ; stored as bytes
+    small_num: db 100             ; fits in 1 byte
+    mid_num:   dw 30000           ; fits in 2 bytes
+    big_num:   dd 1000000000      ; fits in 4 bytes
+</code></pre>
+
+<p>
+  If we want the assembler to calculate the length of a string for us,  
+  we can use <code_block>equ</code_block> with the <code_block>$</code_block> symbol (which represents “current position”):
+</p>
+<pre><code class="nasm-code">message:     db "Hello, World!"
+message_len: equ $ - message
+</code></pre>
+
+<h3>Using sys_write</h3>
+<p>
+  Here's how to call <strong>sys_write</strong> in 32-bit NASM:
+</p>
+<pre><code class="nasm-code">mov eax, 4           ; syscall number (sys_write)
+mov ebx, 1           ; file descriptor (1 = stdout)
+mov ecx, message     ; address of the text
+mov edx, message_len ; length of the text
+int 80h              ; interrupt to call kernel
+</code></pre>
+
+<h3>Complete "Hello, World!" program</h3>
+<p>
+  Putting it all together, here's the full program:
+</p>
+<pre><code class="nasm-code">section .data
+    message: db "Hello, World!", 10 ; 10 is ascii value for new line
+    message_len: equ $ - message
+
+section .text
+    global _start
+
+_start:
+    ; Write "Hello, World!"
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, message
+    mov edx, message_len
+    int 80h
+
+    ; Exit program
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+</code></pre>
+
+    <h3>Practice Question:</h3>
+    <p>Write a NASM program displaying your name.</p>
+
+    <div class="answer-btn">
+      <a href="answers/2.html">Check the answer</a>
+    </div></part3>
+    <part4 id="part4">
+    <light_orange><h2>Arithmetic in NASM</h2></light_orange>
+
+    <p>
+      NASM supports basic arithmetic instructions such as 
+      <code_block>add</code_block>, <code_block>sub</code_block>, 
+      <code_block>mul</code_block>, <code_block>div</code_block>, 
+      and bitwise operators like <code_block>and</code_block>, 
+      <code_block>or</code_block>, and <code_block>xor</code_block>.  
+      These instructions operate on registers or memory values.
+    </p>
+
+    <h3>Addition and Subtraction</h3>
+    <p>
+      The <code_block>add</code_block> instruction adds the source to the destination,  
+      while <code_block>sub</code_block> subtracts the source from the destination.
+    </p>
+    <pre><code class="nasm-code">mov eax, 5
+add eax, 3     ; eax = 5 + 3 = 8
+sub eax, 2     ; eax = 8 - 2 = 6
+</code></pre>
+
+    <h3>Multiplication</h3>
+    <p>
+      The <code_block>mul</code_block> instruction performs unsigned multiplication.  
+      It assumes the first operand is in <code_block>EAX</code_block> and multiplies by the source.
+    </p>
+    <pre><code class="nasm-code">mov eax, 6
+mov ebx, 7
+mul ebx        ; EAX = 6 * 7 = 42
+</code></pre>
+
+    <h3>Division</h3>
+    <p>
+      The <code_block>div</code_block> instruction performs unsigned division.  
+      The dividend must be in <code_block>EDX:EAX</code_block>,  
+      where <code_block>EDX</code_block> is the high part and <code_block>EAX</code_block> is the low part.  
+      The result goes into <code_block>EAX</code_block> (quotient) and <code_block>EDX</code_block> (remainder).
+    </p>
+    <pre><code class="nasm-code">mov eax, 20    ; dividend = 20
+xor edx, edx   ; clear high bits
+mov ebx, 6     ; divisor = 6
+div ebx        ; EAX = 20 / 6 = 3, EDX = 20 % 6 = 2
+</code></pre>
+
+    <h3>Inc and Dec</h3>
+    <p>In NASM <code_block>inc</code_block> and <code_block>dec</code_block> are really simple, 
+      <code_block>inc</code_block> adds 1 to given value and <code_block>dec</code_block> subtracts 1.
+    For example:</p>
+    <pre><code class="nasm-code">
+mov eax, 1 ; eax = 1
+inc eax    ; eax = 2
+dec eax    ; eax = 1
+    </code></pre>
+
+    <h3>Bitwise AND, OR, XOR</h3>
+    <p>
+      Bitwise operators act on individual bits of registers:
+    </p>
+    <ul>
+      <li><code_block>and</code_block> - bitwise AND</li>
+      <li><code_block>or</code_block> - bitwise OR</li>
+      <li><code_block>xor</code_block> - bitwise XOR (exclusive OR)</li>
+    </ul>
+    <pre><code class="nasm-code">mov eax, 6     ; 0000 0110 (binary)
+mov ebx, 3     ; 0000 0011 (binary)
+
+and eax, ebx   ; result = 0000 0010 (decimal 2)
+or eax, ebx    ; result = 0000 0011 (decimal 3)
+xor eax, ebx   ; result = 0000 0101 (decimal 5)
+</code></pre>
+
+    <h3>Practice Question:</h3>
+    <p>
+      Write a NASM program that calculates 10 * 5 - 7
+      and stores the result in eax.
+    </p>
+
+    <div class="answer-btn">
+      <a href="answers/3.html">Check the answer</a>
+    </div></part4>
+    <part5 id="part5">
+      <light_orange><h2>Input in NASM</h2></light_orange>
+
+      <p>
+        To read input from the user in 32-bit Linux NASM, we use the <strong>sys_read</strong> syscall (number <code_block>3</code_block>),  
+        and to print it back we use <strong>sys_write</strong> (number <code_block>4</code_block>). 
+        It's important to remember that pressing enter adds newline character to the input.
+      </p>
+
+      <ul>
+        <li><strong>Where</strong> to read from (usually <code_block>stdin</code_block>, file descriptor <code_block>0</code_block>).</li>
+        <li><strong>Where to store it</strong> (a buffer in memory).</li>
+        <li><strong>How much</strong> to read (the maximum number of bytes).</li>
+      </ul>
+
+      <h3>Using .bss for uninitialized data</h3>
+      <p>
+        The <code_block>.bss</code_block> section is used for declaring <i>uninitialized variables</i>.  
+        Unlike <code_block>.data</code_block>, which stores predefined values, <code_block>.bss</code_block> reserves space in memory but does not assign initial values.
+      </p>
+
+      <p>
+        To allocate space in <code_block>.bss</code_block>, we use directives like <code_block>resb</code_block> (reserve bytes), <code_block>resw</code_block> (reserve words), or <code_block>resd</code_block> (reserve double words).  
+        Example: <code_block>buffer resb 1024</code_block> reserves 1024 bytes of memory for input.
+      </p>
+
+      <p><b>Important:</b> <code_block>mov edx, [variable]</code_block> if variable is defined in <code_block>section .bss</code_block> or <code_block>section .data</code_block>
+         moves the value of it into <code_block>edx</code_block> but if it's <code_block>mov edx, variable</code_block> 
+         it moves memory adress of the variable to it.</p>
+
+      <h3>Example: Reading and printing user input</h3>
+      <pre><code class="nasm-code">section .bss
+  buffer resb 1024  ; 1KB buffer
+
+section .text
+  global _start
+
+_start:
+  ; Read input from user
+  mov eax, 3        ; sys_read
+  mov ebx, 0        ; stdin
+  mov ecx, buffer   ; address of buffer
+  mov edx, 1024     ; maximum bytes
+  int 80h           ; call kernel
+
+  ; Print what user typed
+  mov edx, eax       ; actual length of input
+  mov eax, 4         ; sys_write
+  mov ebx, 1         ; stdout
+  mov ecx, buffer
+  int 80h
+
+  ; Exit program
+  mov eax, 1         ; sys_exit
+  xor ebx, ebx       ; return code 0
+  int 80h
+      </code></pre>
+
+      <h3>Practice Question:</h3>
+      <p>Write a "What's your name?" NASM program.</p>
+
+      <div class="answer-btn">
+        <a href="answers/4.html">Check the answer</a>
+      </div>
+    </part5>
+    <part6 id="part6">
+      <light_orange><h2>Labels & Control Flow</h2></light_orange>
+
+      <p>
+        Labels in NASM are names followed by a colon (<code_block>:</code_block>) that mark positions in your code. 
+        They are commonly used for loops, jumps, and function-like structures.
+      </p>
+
+      <h3>Labels</h3>
+      <p>
+        A label is just a marker in your code. Example:
+      </p>
+      <pre><code class="nasm-code">start:
+    mov eax, 1
+    jmp end
+    middle:
+        add eax, 2
+    end:
+        int 80h
+      </code></pre>
+
+      <h3>The <code_block>jmp</code_block> instruction</h3>
+      <p>
+        <code_block>jmp</code_block> performs an unconditional jump to the given label.
+      </p>
+      <pre><code class="nasm-code">jmp loop_start   ; jump to label loop_start
+      </code></pre>
+
+      <h3>The <code_block>cmp</code_block> instruction</h3>
+      <p>
+        <code_block>cmp</code_block> compares two operands by subtracting the second from the first.
+        It does not store the result, but it updates processor flags, which can be used by conditional jumps.
+      </p>
+      <pre><code class="nasm-code">cmp eax, ebx   ; compare eax with ebx
+      </code></pre>
+
+      <h3>Conditional jumps</h3>
+      <p>
+        After a <code_block>cmp</code_block>, you can use conditional jumps based on the result:
+      </p>
+      <ul>
+        <li><code_block>je</code_block> (jump if equal)</li>
+        <li><code_block>jne</code_block> (jump if not equal)</li>
+        <li><code_block>jg</code_block> (jump if greater)</li>
+        <li><code_block>jl</code_block> (jump if less)</li>
+        <li><code_block>jge</code_block> (jump if greater or equal)</li>
+        <li><code_block>jle</code_block> (jump if less or equal)</li>
+      </ul>
+
+      <h3>Example: Simple loop</h3>
+      <pre><code class="nasm-code">section .text
+  global _start
+
+_start:
+  mov ecx, 5        ; loop counter
+  loop_start:
+    ; do something here
+    dec ecx
+    cmp ecx, 0
+    jne loop_start    ; repeat until ecx == 0
+
+    ; exit program
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
+      </code></pre>
+
+      <h3>Practice Question:</h3>
+      <p>
+        Write a NASM program that counts down from 10 to 1 and then exits.
+      </p>
+
+      <div class="answer-btn">
+        <a href="answers/5.html">Check the answer</a>
+      </div>
+    </part6>
+    <part7 id="part7">
+    <light_orange><h2>Important Info</h2></light_orange>
+    <p>How to make a program that prints something 10 times? Well, it's quite different than what you would probably except:</p>
+    <pre><code class="nasm-code">section .data
+  loop_num: dd 10 ; 32bit value
+  msg: db "Hello there!", 10
+  msg_len: equ $-msg
+
+section .text
+  global _start
+
+_start:
+  loop:
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg
+    mov edx, msg_len
+    int 80h
+    mov eax, [loop_num]
+    dec eax
+    mov [loop_num], eax
+    cmp eax, 0
+    jne loop
+
+  mov eax, 1
+  mov ebx, 0
+  int 80h
+</code></pre>
+    <p>First of all, why is <code_block>loop_num</code_block> 32 bit? It's because we are comapring it to 32 bit register - <code_block>eax</code_block>.
+    Now, why can't we just write <code_block>dec [loop_num]</code_block>? Because <code_block>dec</code_block> don't work with variables.</p>
+    </part7>
+
+  </main>
+  <script>
+    const topPanel = document.getElementById('topPanel');
+    let lastScroll = 0;
+
+    const mediaQuery = window.matchMedia("(max-width: 1000px)");
+
+    function handleScroll() {
+      if (mediaQuery.matches) return; // disable script on <= 1000px
+
+      const currentScroll = window.scrollY;
+      if (currentScroll > lastScroll) {
+        topPanel.classList.add('hidden'); // scrolling down → hide
+      } else {
+        topPanel.classList.remove('hidden'); // scrolling up → show
+      }
+      lastScroll = currentScroll;
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    // optional: re-run when screen resizes, to reset the bar
+    mediaQuery.addEventListener("change", (e) => {
+      if (e.matches) {
+        topPanel.classList.remove('hidden'); // reset when disabled
+      }
+    });
+  </script>
+</body>
+</html>
+
+<script>
+const keywords = {
+  sec: /\b(section|global|db|dw|dd|dq|_start|equ)\b/g,
+  call: /\b(mov|int|sub|add|mul|div|and|not|xor|or|jmp|cmp|je|jg|jne|jl|jge|jle|inc|dec)\b/g,
+  reg: /\b(eax|ebx|ecx|edx|80h)\b/g
+};
+
+document.querySelectorAll('code.nasm-code').forEach(block => {
+  let html = block.innerHTML;
+  html = html.replace(keywords.sec, '<span class="sec">$1</span>');
+  html = html.replace(keywords.call, '<span class="call">$1</span>');
+  html = html.replace(keywords.reg, '<span class="reg">$1</span>');
+  block.innerHTML = html;
+});
+</script>
