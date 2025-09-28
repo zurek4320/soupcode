@@ -17,6 +17,8 @@
 
   <div class="top-panel" id="topPanel">
     <a href="#part1">What is Fortran & Hello World</a>
+    <a href="#part2">String variables & Input</a>
+    <a href="#part3">Integer and Real Variables & Basic Arithmetic</a>
   </div>
 
   <main>
@@ -40,7 +42,64 @@
   print *, "hello world!"
 end program hello</code></pre>
 </part1>
+
+  <part2 id="part2">
+    <light_orange><h2>String variables & Input</h2></light_orange>
+    <p>In Fortran defining variables might feel a little bit weird, to do it
+      (define a variable) you need to type <code_block>variable_type :: variable_name</code_block>. First variable type you gonna learn is
+      a <code_block>string</code_block> that in Fortran is called <code_block>character</code_block>. BUT, defining a string is a little
+      bit diffrent than defining any other variable, you need to specify how much characters can your variable store at most. 
+      You can do that in few diffrent ways for example by writing characters limit after <code_block>*</code_block> at the end 
+      like this: <code_block>character :: clever_var_name*20</code_block> or by writing it in brackets like this: 
+      <code_block>character(20) :: first_name</code_block>. Now that you defined a variable to make it hold information write 
+      <code_block>variable_name</code_block> followed by <code_block>=</code_block> and value of your variable (text values need to be
+      inside of double quotes) for example: <code_block>data = "clever text"</code_block>. To print a variable you can close double 
+      quotes in print and add your variable (or other text in another double quotes) after comma. Here is an example of that:</p>
+    <pre><code class="fortran-code">program string
+    character :: name*20
+    name = "zurek"
+    print *, "Hello, ", name, "!"
+
+end program string</code></pre>
+    <p>After running code above you will see following output: <code_block>Hello, zurek               !</code_block>. But why?
+    That's because we specified that variable <code_block>name</code_block> can hold up to 20 characters, so 
+    the <code_block>print</code_block> prints 20 character. To delete all the spaces in <code_block>print</code_block> after the variable
+    we can use function called <code_block>trim</code_block>. Here is an example of code that will give us this output: 
+    <code_block>Hello, zurek!</code_block></p>
+    <pre><code class="fortran-code">program string
+    character :: name*20
+    name = "zurek"
+    print *, "Hello, ", trim(name), "!"
+
+end program string</code></pre>
+
+      <h3>Input</h3>
+      <p>In Fortran getting input is really easy, just type <code_block>read *,</code_block> followed by name of variable you want to save it to. For example:</p>
+      <pre><code class="fortran-code">program test
+	character :: data*50
+	print *, "Enter data:"
+	read *, data
+	print *, "You have entered: ", data
+end program test</code></pre>
+  </part2>
+
+  <part3 id="part3">
+    <light_orange><h2>Integer and Real Variables & Basic Arithmetic</h2></light_orange>
+    <p>Integer variables are these ones that hold, well integers and are defined like this: <code_block>integer :: number</code_block>. 
+      Real variables hold fractional numbers and are defined like this: <code_block>real :: number</code_block>. Here is an example usage of them:</p>
+    <pre><code class="fortran-code">program test
+	integer :: num1
+	real :: num2
+	num1 = 48
+	num2 = 3.14
+	print *, "Num1: ", num1, "| Num2: ", num2
+
+end program test</code></pre>
+    <p>Well, real numbers are a little bit laggy so as the output you will get something more like this: 
+      <code_block> Num1:           48 | Num2:    3.14000010</code_block> than this: <code_block> Num1:           48 | Num2:    3.14000000</code_block></p>
+  </part3>
   </main>
+  
   <script>
     const topPanel = document.getElementById('topPanel');
     let lastScroll = 0;
@@ -68,8 +127,6 @@ end program hello</code></pre>
       }
     });
   </script>
-
-
 </body>
 </html>
 
@@ -77,11 +134,13 @@ end program hello</code></pre>
 const keywords = {
   func: /\b(program|end|print|read)\b/g,
   arg: /\b(if|else)\b/g,
-  special: /\b(implicit|none|character|integer|real|trim)\b/g
+  special: /\b(implicit|none|character|integer|real|trim)\b/g,
+  string: /"([^"]|"")*"/g
 };
 
 document.querySelectorAll('code.fortran-code').forEach(block => {
   let html = block.innerHTML;
+  html = html.replace(keywords.string, '<span class="string">$&</span>');
   html = html.replace(keywords.func, '<span class="func">$1</span>');
   html = html.replace(keywords.arg, '<span class="arg">$1</span>');
   html = html.replace(keywords.special, '<span class="special">$1</span>');
